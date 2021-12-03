@@ -26,26 +26,26 @@ fun leastCommonBitAt(input: List<List<Int>>, index: Int): Int {
 
 fun oxygenGeneratorRating(input: List<List<Int>>): List<Int> {
     var filtered = input
+    var i = 0
 
-    input.indices.forEach { i ->
+    do {
         filtered = filtered.filter { it[i] == mostCommonBitAt(filtered, i) }
-
-        if (filtered.size <= 1) return filtered.first()
-    }
+        i++
+    } while (filtered.size > 1)
 
     return filtered.first()
 }
 
 fun co2ScrubberRating(input: List<List<Int>>): List<Int> {
-    var filtered2 = input
+    var filtered = input
+    var i = 0
 
-    input.indices.forEach { i ->
-        filtered2 = filtered2.filter { it[i] == leastCommonBitAt(filtered2, i) }
+    do {
+        filtered = filtered.filter { it[i] == leastCommonBitAt(filtered, i) }
+        i++
+    } while (filtered.size > 1)
 
-        if (filtered2.size <= 1) return filtered2.first()
-    }
-
-    return filtered2.first()
+    return filtered.first()
 }
 
 fun main() {
