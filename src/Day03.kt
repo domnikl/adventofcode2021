@@ -1,62 +1,34 @@
-fun leastCommonBits(input: List<List<Int>>): List<Int> {
-    return countOnes(input).map {
-        when {
-            it > input.size / 2 -> 0
-            else -> 1
-        }
-    }
+fun leastCommonBits(input: List<List<Int>>) = input.first().indices.map {
+    leastCommonBitAt(input, it)
 }
 
-fun mostCommonBits(input: List<List<Int>>): List<Int> {
-    val half = input.size / 2.0
-
-    return countOnes(input).map {
-        when {
-            it >= half -> 1
-            else -> 0
-        }
-    }
+fun mostCommonBits(input: List<List<Int>>) = input.first().indices.map {
+    mostCommonBitAt(input, it)
 }
 
 fun mostCommonBitAt(input: List<List<Int>>, index: Int): Int {
-    val half = input.size / 2.0
     val count = input.count { it[index] == 1 }
 
     return when {
-        count >= half -> 1
+        count >= input.size / 2.0 -> 1
         else -> 0
     }
 }
 
 fun leastCommonBitAt(input: List<List<Int>>, index: Int): Int {
-    val half = input.size / 2.0
     val count = input.count { it[index] == 0 }
 
     return when {
-        count > half -> 1
+        count > input.size / 2.0 -> 1
         else -> 0
     }
-}
-
-fun countOnes(input: List<List<Int>>): List<Int> {
-    val counts = Array(input.first().size) { 0 }
-
-    input.forEach { line ->
-        line.map { it == 1 }.forEachIndexed { index, b ->
-            if (b) counts[index]++
-        }
-    }
-
-    return counts.toList()
 }
 
 fun oxygenGeneratorRating(input: List<List<Int>>): List<Int> {
     var filtered = input
 
-    (input.indices).forEach { i ->
-        val mostCommon = mostCommonBitAt(filtered, i)
-
-        filtered = filtered.filter { it[i] == mostCommon }
+    input.indices.forEach { i ->
+        filtered = filtered.filter { it[i] == mostCommonBitAt(filtered, i) }
 
         if (filtered.size <= 1) return filtered.first()
     }
@@ -67,17 +39,10 @@ fun oxygenGeneratorRating(input: List<List<Int>>): List<Int> {
 fun co2ScrubberRating(input: List<List<Int>>): List<Int> {
     var filtered2 = input
 
-    (input.indices).forEach lit@{ i ->
-        val leastCommon = leastCommonBitAt(filtered2, i)
+    input.indices.forEach { i ->
+        filtered2 = filtered2.filter { it[i] == leastCommonBitAt(filtered2, i) }
 
-        println(filtered2)
-        println("least common at $i: $leastCommon")
-
-        filtered2 = filtered2.filter { it[i] == leastCommon }
-
-        if (filtered2.size <= 1) {
-            return filtered2.first()
-        }
+        if (filtered2.size <= 1) return filtered2.first()
     }
 
     return filtered2.first()
@@ -85,17 +50,21 @@ fun co2ScrubberRating(input: List<List<Int>>): List<Int> {
 
 fun main() {
     fun part1(input: List<String>): Int {
-        val mostCommon = mostCommonBits(input.toInts()).joinToString("")
-        val epsilon = leastCommonBits(input.toInts()).joinToString("")
+        val diagnosticReport = input.toInts()
 
-        return mostCommon.toInt(2) * epsilon.toInt(2)
+        val gamma = mostCommonBits(diagnosticReport).joinToString("")
+        val epsilon = leastCommonBits(diagnosticReport).joinToString("")
+
+        return gamma.toInt(2) * epsilon.toInt(2)
     }
 
     fun part2(input: List<String>): Int {
-        val oxygenGeneratorRating = oxygenGeneratorRating(input.toInts()).toInt(2)
-        val co2 = co2ScrubberRating(input.toInts()).toInt(2)
+        val diagnosticReport = input.toInts()
 
-        return oxygenGeneratorRating * co2
+        val oxygen = oxygenGeneratorRating(diagnosticReport)
+        val co2 = co2ScrubberRating(diagnosticReport)
+
+        return oxygen.toInt(2) * co2.toInt(2)
     }
 
     // test if implementation meets criteria from the description, like:
